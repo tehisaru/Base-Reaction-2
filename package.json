@@ -6,7 +6,7 @@
   "homepage": "https://tehisaru.github.io/base-reaction",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",i 
+    "build": "vite build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "check": "tsc",

@@ -49,14 +49,22 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const boardWidth = cols * CELL_SIZE + cols * 2 + 24;
       const boardHeight = (rows * CELL_SIZE + rows * 2 + 24) * 1.017;
       
-      const availableWidth = window.innerWidth - 32; // Account for padding
-      const availableHeight = window.innerHeight - 200; // Account for UI elements
+      // More aggressive mobile scaling
+      const isMobile = window.innerWidth < 768;
+      const padding = isMobile ? 16 : 32;
+      const headerHeight = isMobile ? 120 : 200;
+      
+      const availableWidth = window.innerWidth - padding;
+      const availableHeight = window.innerHeight - headerHeight;
       
       const scaleX = availableWidth / boardWidth;
       const scaleY = availableHeight / boardHeight;
       
-      // Use the smaller scale to ensure the board fits, but cap at 1 to avoid upscaling
-      const newScale = Math.min(scaleX, scaleY, 1);
+      // Force scaling down on mobile, allow slight upscaling on desktop
+      const maxScale = isMobile ? 1 : 1.2;
+      const minScale = 0.3; // Allow very small scaling if needed
+      
+      const newScale = Math.max(minScale, Math.min(scaleX, scaleY, maxScale));
       setScale(newScale);
     };
 

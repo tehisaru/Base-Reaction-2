@@ -85,7 +85,7 @@ const BaseReactionMode: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen flex flex-col items-center p-2 md:p-4 transition-colors duration-500"
+      className="min-h-screen flex flex-col items-center p-1 md:p-4 transition-colors duration-500 overflow-hidden"
       style={{ backgroundColor: PLAYER_BG_COLORS[currentPlayer] }}
     >
       <h1 className="text-3xl font-bold mb-6 text-white pt-4" style={{ fontFamily: 'Menlo, monospace' }}>Base Reaction</h1>

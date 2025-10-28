@@ -98,6 +98,9 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
   animating: false,
   setAnimating: (animating) => set({ animating }),
 
+  // Visual effects state
+  lastHQDamaged: undefined,
+
   // Base mode specific
   hqs: [],
   powerUps: [],
@@ -543,6 +546,9 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
           const settings = PlayerSettingsManager.getSettings();
           const numPlayers = settings.numberOfPlayers || 2;
           
+          // Track cells that receive dots from diamond to check for powerups
+          const cellsWithDots: {r: number, c: number}[] = [];
+          
           if (numPlayers >= 3) {
             // 3-4 player game: Diamond spawns dots in a 3x3 area around the clicked cell
             console.log("Diamond power-up in 3-4 player game: spawning dots in 3x3 area");
@@ -556,6 +562,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                   if (newGrid[r][c].player === null || newGrid[r][c].player === currentPlayer) {
                     newGrid[r][c].atoms += 1;
                     newGrid[r][c].player = currentPlayer;
+                    cellsWithDots.push({r, c});
                   }
                 }
               }
@@ -567,9 +574,72 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
               if (newGrid[row][c].player === null || newGrid[row][c].player === currentPlayer) {
                 newGrid[row][c].atoms += 1;
                 newGrid[row][c].player = currentPlayer;
+                cellsWithDots.push({r: row, c});
               }
             }
           }
+          
+          // Check if any of the cells with dots have powerups and activate them
+          console.log("Checking for powerups on cells that received dots from diamond");
+          const powerUpsToRemove: number[] = [];
+          cellsWithDots.forEach(({r, c}) => {
+            const cellPowerUpIndex = newPowerUps.findIndex(pu => pu.row === r && pu.col === c);
+            if (cellPowerUpIndex !== -1) {
+              const cellPowerUp = newPowerUps[cellPowerUpIndex];
+              console.log(`Found ${cellPowerUp.type} powerup at (${r}, ${c}) - activating it!`);
+              
+              if (cellPowerUp.type === 'heart') {
+                // Activate heart powerup
+                const ownHQ = newHqs.find(hq => hq.player === currentPlayer);
+                if (ownHQ) {
+                  if (ownHQ.health < 5) {
+                    // Heal own HQ
+                    console.log(`Heart powerup at (${r}, ${c}): Healing own HQ`);
+                    ownHQ.health += 1;
+                    setTimeout(() => {
+                      set(state => ({
+                        ...state,
+                        lastHQDamaged: {
+                          row: ownHQ.row,
+                          col: ownHQ.col,
+                          player: ownHQ.player,
+                          timestamp: Date.now(),
+                          type: 'heal' as const
+                        }
+                      }));
+                    }, 0);
+                  } else {
+                    // Damage a random enemy
+                    const enemyHQs = newHqs.filter(hq => hq.player !== currentPlayer);
+                    if (enemyHQs.length > 0) {
+                      const targetEnemy = enemyHQs[Math.floor(Math.random() * enemyHQs.length)];
+                      console.log(`Heart powerup at (${r}, ${c}): Damaging enemy ${targetEnemy.player}`);
+                      targetEnemy.health -= 1;
+                      setTimeout(() => {
+                        set(state => ({
+                          ...state,
+                          lastHQDamaged: {
+                            row: targetEnemy.row,
+                            col: targetEnemy.col,
+                            player: targetEnemy.player,
+                            timestamp: Date.now(),
+                            type: 'damage' as const
+                          }
+                        }));
+                      }, 0);
+                    }
+                  }
+                }
+                // Mark this powerup for removal
+                powerUpsToRemove.push(cellPowerUpIndex);
+              }
+            }
+          });
+          
+          // Remove powerups in reverse order to avoid index shifting issues
+          powerUpsToRemove.sort((a, b) => b - a).forEach(index => {
+            newPowerUps.splice(index, 1);
+          });
         } catch (error) {
           console.error("Error determining player count for diamond power-up:", error);
           // Fallback to original behavior
@@ -581,7 +651,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
           }
         }
         
-        // Remove the power-up after use
+        // Remove the diamond power-up after use
         newPowerUps.splice(powerUpIndex, 1);
       } else if (powerUp && powerUp.type === 'heart') {
         // NEW HEART POWER-UP LOGIC - NO DOT PLACEMENT
@@ -652,19 +722,18 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
         // For heart power-up, skip normal dot placement - no explosion check needed
         
         // For heart power-up, complete the turn immediately (no dots or explosions)
-        return set(state => {
-          const nextPlayer = currentPlayer === PLAYER.RED ? PLAYER.BLUE : 
-                            currentPlayer === PLAYER.BLUE ? PLAYER.ORANGE : 
-                            currentPlayer === PLAYER.ORANGE ? PLAYER.BLACK : PLAYER.RED;
-          
-          return {
-            ...state,
-            grid: newGrid,
-            powerUps: newPowerUps,
-            hqs: newHqs,
-            currentPlayer: nextPlayer
-          };
-        });
+        // Get active players from settings
+        const activePlayers = PlayerSettingsManager.getSettings().players;
+        const currentIndex = activePlayers.indexOf(currentPlayer);
+        const nextIndex = (currentIndex + 1) % activePlayers.length;
+        const nextPlayer = activePlayers[nextIndex];
+        
+        return {
+          grid: newGrid,
+          powerUps: newPowerUps,
+          hqs: newHqs,
+          currentPlayer: nextPlayer
+        };
       } else {
         // Normal move - add a dot to the selected cell
         if (newGrid[row][col].player !== currentPlayer && newGrid[row][col].player !== null) {

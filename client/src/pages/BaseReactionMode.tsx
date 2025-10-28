@@ -16,22 +16,23 @@ const BaseReactionMode: React.FC = () => {
   // Initialize AI for automatic turns
   useAITurn();
   
+  const state = useChainReaction();
   const {
-    grid,
-    rows,
-    cols,
-    currentPlayer,
-    gameOver,
-    winner,
-    history,
-    hqs,
-    powerUps,
-    placeDot,
-    undo,
-    restart,
-    isValidMove,
-    initBaseMode
-  } = useChainReaction();
+    grid = [],
+    rows = 9,
+    cols = 7,
+    currentPlayer = 'red' as any,
+    gameOver = false,
+    winner = null,
+    history = [],
+    hqs = [],
+    powerUps = [],
+    placeDot = () => {},
+    undo = () => {},
+    restart = () => {},
+    isValidMove = () => false,
+    initBaseMode = () => {}
+  } = state || {};
   
   // Initialize base mode on component mount
   useEffect(() => {

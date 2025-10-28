@@ -8,6 +8,9 @@ import { getAIMove, AI_STRATEGY } from './aiPlayer';
  * A React hook to process AI turns
  */
 export const useAITurn = () => {
+  const state = useChainReaction();
+  
+  // Safely destructure with fallbacks
   const { 
     currentPlayer, 
     gameOver,
@@ -19,11 +22,11 @@ export const useAITurn = () => {
     animating,
     heartSelectionMode,
     pendingHeartPlayer
-  } = useChainReaction();
+  } = state || {};
 
   useEffect(() => {
-    // Skip if game is over or animations are in progress
-    if (gameOver || animating) {
+    // Skip if state not initialized or game is over or animations are in progress
+    if (!state || !grid || grid.length === 0 || gameOver || animating) {
       return;
     }
 

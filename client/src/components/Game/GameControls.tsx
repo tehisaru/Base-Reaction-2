@@ -47,26 +47,27 @@ const GameControls: React.FC<GameControlsProps> = ({
 
   return (
     <div 
-      className="flex flex-col items-center justify-center w-full max-w-3xl p-4 mb-6"
+      className="flex flex-col items-center justify-center w-full max-w-3xl px-2 md:px-4 py-2 md:py-4 mb-2 md:mb-6"
       style={{ 
         backgroundColor: 'transparent',
         transition: "background-color 0.5s ease"
       }}
     >
-      <div className="flex items-center space-x-10">
+      <div className="flex flex-row items-center justify-center gap-2 md:gap-6 w-full max-w-md">
         <button
           onClick={onUndo}
           disabled={!canUndo}
-          className={`px-6 py-3 rounded-xl text-white text-base font-medium transition-all duration-500 ${
+          className={`flex-1 min-h-[44px] px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl text-white text-sm md:text-base font-medium transition-all duration-300 touch-manipulation ${
             canUndo 
-              ? "hover:opacity-80" 
+              ? "active:scale-95 active:opacity-70" 
               : "opacity-50 cursor-not-allowed"
           }`}
           style={{ 
             fontFamily: 'Menlo, monospace',
-            backgroundColor: 'rgb(20, 20, 20)', // Really dark gray with no transparency
+            backgroundColor: 'rgb(20, 20, 20)',
             border: 'none',
-            transition: "opacity 0.3s ease" // Simplified transition
+            transition: "opacity 0.3s ease, transform 0.1s ease",
+            WebkitTapHighlightColor: 'transparent'
           }}
         >
           Undo
@@ -74,12 +75,13 @@ const GameControls: React.FC<GameControlsProps> = ({
 
         <button
           onClick={onRestart}
-          className="px-6 py-3 rounded-xl text-white text-base font-medium hover:opacity-80 transition-all duration-500"
+          className="flex-1 min-h-[44px] px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl text-white text-sm md:text-base font-medium active:scale-95 active:opacity-70 transition-all duration-300 touch-manipulation"
           style={{ 
             fontFamily: 'Menlo, monospace',
-            backgroundColor: 'rgb(20, 20, 20)', // Really dark gray with no transparency
+            backgroundColor: 'rgb(20, 20, 20)',
             border: 'none',
-            transition: "opacity 0.3s ease" // Simplified transition
+            transition: "opacity 0.3s ease, transform 0.1s ease",
+            WebkitTapHighlightColor: 'transparent'
           }}
         >
           Restart
@@ -87,12 +89,13 @@ const GameControls: React.FC<GameControlsProps> = ({
 
         <button
           onClick={() => navigate("/")}
-          className="px-6 py-3 rounded-xl text-white text-base font-medium hover:opacity-80 transition-all duration-500"
+          className="flex-1 min-h-[44px] px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl text-white text-sm md:text-base font-medium active:scale-95 active:opacity-70 transition-all duration-300 touch-manipulation"
           style={{ 
             fontFamily: 'Menlo, monospace',
-            backgroundColor: 'rgb(20, 20, 20)', // Really dark gray with no transparency
+            backgroundColor: 'rgb(20, 20, 20)',
             border: 'none',
-            transition: "opacity 0.3s ease" // Simplified transition
+            transition: "opacity 0.3s ease, transform 0.1s ease",
+            WebkitTapHighlightColor: 'transparent'
           }}
         >
           Menu

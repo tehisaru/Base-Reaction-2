@@ -111,7 +111,7 @@ const BoardCell: React.FC<BoardCellProps> = ({
           backgroundColor: isHQ 
             ? `${PLAYER_COLORS[cell.player!]}66` // 40% opacity of player color for HQ
             : isInAlwaysValidZone 
-              ? "rgba(255, 255, 255, 0.25)" // Lighter background for always-valid zone
+              ? "rgba(255, 255, 255, 0.14)" // Lighter background for always-valid zone
               : "rgba(255, 255, 255, 0.1)", // Normal slightly visible white background
           border: "none", // Remove border for completely flat look
           margin: "1px",

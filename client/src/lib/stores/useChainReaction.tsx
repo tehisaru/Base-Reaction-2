@@ -456,13 +456,15 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
       const isValidTarget = clickedHQ && clickedHQ.player !== currentPlayer;
       console.log(`Is valid enemy target:`, isValidTarget);
       
+      // Get active players from settings and calculate next player
+      const activePlayers = PlayerSettingsManager.getSettings().players;
+      const currentIndex = activePlayers.indexOf(currentPlayer);
+      const nextIndex = (currentIndex + 1) % activePlayers.length;
+      const nextPlayer = activePlayers[nextIndex];
+      console.log(`Active players: ${activePlayers}, Current: ${currentPlayer}, Next: ${nextPlayer}`);
+      
       if (isValidTarget) {
         console.log(`✅ DAMAGING ENEMY: ${clickedHQ.player} (health: ${clickedHQ.health} -> ${clickedHQ.health - 1})`);
-        
-        // Simple next player calculation
-        const nextPlayer = currentPlayer === PLAYER.RED ? PLAYER.BLUE : 
-                          currentPlayer === PLAYER.BLUE ? PLAYER.ORANGE : 
-                          currentPlayer === PLAYER.ORANGE ? PLAYER.BLACK : PLAYER.RED;
         
         // Update everything in one atomic operation
         const newHqs = hqs.map(hq => 
@@ -490,11 +492,6 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
         return;
       } else {
         console.log(`❌ CANCELLING HEART SELECTION (invalid target)`);
-        
-        // Cancel selection and advance turn
-        const nextPlayer = currentPlayer === PLAYER.RED ? PLAYER.BLUE : 
-                          currentPlayer === PLAYER.BLUE ? PLAYER.ORANGE : 
-                          currentPlayer === PLAYER.ORANGE ? PLAYER.BLACK : PLAYER.RED;
         
         set({
           ...get(),

@@ -26,17 +26,17 @@ const GameOverOverlay: React.FC<GameOverOverlayProps> = ({
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", damping: 15 }}
-        className="bg-black text-white rounded-lg p-8 max-w-md w-full mx-4"
+        className="bg-black text-white rounded-lg p-6 md:p-8 max-w-md w-full mx-4"
         style={{ transition: "all 0.3s ease" }}
       >
-        <h2 className="text-3xl font-bold text-center mb-6" style={{ fontFamily: 'Menlo, monospace' }}>Game Over!</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6" style={{ fontFamily: 'Menlo, monospace' }}>Game Over!</h2>
         
-        <div className="flex items-center justify-center mb-8">
+        <div className="flex items-center justify-center mb-6 md:mb-8">
           <div 
-            className="w-12 h-12 rounded-full mr-4" 
+            className="w-10 h-10 md:w-12 md:h-12 rounded-full mr-3 md:mr-4" 
             style={{ backgroundColor: PLAYER_COLORS[winner] }}
           ></div>
-          <p className="text-2xl font-bold" style={{ fontFamily: 'Menlo, monospace' }}>
+          <p className="text-xl md:text-2xl font-bold" style={{ fontFamily: 'Menlo, monospace' }}>
             {winner === PLAYER.RED ? "Red" : 
              winner === PLAYER.BLUE ? "Blue" : 
              winner === PLAYER.BLACK ? "Black" : 
@@ -44,14 +44,15 @@ const GameOverOverlay: React.FC<GameOverOverlayProps> = ({
           </p>
         </div>
         
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-3 md:space-y-4">
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onRestart}
-            className="py-3 px-6 bg-black hover:bg-gray-800 rounded-2xl text-white transition-all duration-300 border-2 border-white"
+            className="min-h-[48px] py-3 md:py-3 px-6 bg-black hover:bg-gray-800 active:bg-gray-700 rounded-2xl text-white transition-all duration-300 border-2 border-white touch-manipulation"
             style={{ 
-              fontFamily: 'Menlo, monospace'
+              fontFamily: 'Menlo, monospace',
+              WebkitTapHighlightColor: 'transparent'
             }}
           >
             Play Again
@@ -61,9 +62,10 @@ const GameOverOverlay: React.FC<GameOverOverlayProps> = ({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onBackToMenu}
-            className="py-3 px-6 bg-black hover:bg-gray-800 rounded-2xl text-white transition-all duration-300 border-2 border-white"
+            className="min-h-[48px] py-3 md:py-3 px-6 bg-black hover:bg-gray-800 active:bg-gray-700 rounded-2xl text-white transition-all duration-300 border-2 border-white touch-manipulation"
             style={{ 
-              fontFamily: 'Menlo, monospace'
+              fontFamily: 'Menlo, monospace',
+              WebkitTapHighlightColor: 'transparent'
             }}
           >
             Back to Menu

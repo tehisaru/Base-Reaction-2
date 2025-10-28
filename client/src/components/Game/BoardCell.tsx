@@ -101,7 +101,7 @@ const BoardCell: React.FC<BoardCellProps> = ({
       {/* Main cell content */}
       <div
         ref={cellRef}
-        className="relative"
+        className="relative touch-manipulation active:opacity-80"
         style={{
           width: CELL_SIZE,
           height: CELL_SIZE,
@@ -111,8 +111,9 @@ const BoardCell: React.FC<BoardCellProps> = ({
             : "rgba(255, 255, 255, 0.1)", // Slightly visible white background
           border: "none", // Remove border for completely flat look
           margin: "1px",
-          transition: "all 0.3s ease", // Match the background transition speed
-          zIndex: 2
+          transition: "all 0.3s ease, opacity 0.1s ease", // Match the background transition speed
+          zIndex: 2,
+          WebkitTapHighlightColor: 'transparent'
         }}
         onClick={() => {
           console.log(`🎯 BoardCell.onClick: (${row},${col}) - isValidMove=${isValidMove}, isHeartTarget=${isHeartTarget}, heartSelectionMode=${heartSelectionMode}`);

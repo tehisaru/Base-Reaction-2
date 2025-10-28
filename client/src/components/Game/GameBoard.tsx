@@ -51,8 +51,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
       
       // More aggressive mobile scaling
       const isMobile = window.innerWidth < 768;
-      const padding = isMobile ? 16 : 32;
-      const headerHeight = isMobile ? 120 : 200;
+      const padding = isMobile ? 8 : 32;
+      const headerHeight = isMobile ? 90 : 200;
       
       const availableWidth = window.innerWidth - padding;
       const availableHeight = window.innerHeight - headerHeight;
@@ -62,7 +62,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       
       // Force scaling down on mobile, allow slight upscaling on desktop
       const maxScale = isMobile ? 1 : 1.2;
-      const minScale = 0.3; // Allow very small scaling if needed
+      const minScale = 0.25;
       
       const newScale = Math.max(minScale, Math.min(scaleX, scaleY, maxScale));
       setScale(newScale);

@@ -32,6 +32,7 @@ type BoardCellProps = {
   isHQDestroyed?: boolean; // Track if this HQ cell was just destroyed
   heartSelectionMode?: boolean; // Track if we're in heart selection mode
   pendingHeartPlayer?: string; // Track which player triggered the heart
+  isInAlwaysValidZone?: boolean; // Track if cell is in player's always-valid zone (HQ row/column or adjacent)
 };
 
 const BoardCell: React.FC<BoardCellProps> = ({
@@ -50,7 +51,8 @@ const BoardCell: React.FC<BoardCellProps> = ({
   isHQHealed,
   isHQDestroyed,
   heartSelectionMode = false,
-  pendingHeartPlayer
+  pendingHeartPlayer,
+  isInAlwaysValidZone = false
 }) => {
   const criticalMass = calculateCriticalMass(row, col, totalRows, totalCols);
   const aboutToExplode = isAboutToExplode(cell, row, col, totalRows, totalCols);
@@ -108,7 +110,9 @@ const BoardCell: React.FC<BoardCellProps> = ({
           cursor: (isValidMove || isHeartTarget) ? "pointer" : "not-allowed",
           backgroundColor: isHQ 
             ? `${PLAYER_COLORS[cell.player!]}66` // 40% opacity of player color for HQ
-            : "rgba(255, 255, 255, 0.1)", // Slightly visible white background
+            : isInAlwaysValidZone 
+              ? "rgba(255, 255, 255, 0.25)" // Lighter background for always-valid zone
+              : "rgba(255, 255, 255, 0.1)", // Normal slightly visible white background
           border: "none", // Remove border for completely flat look
           margin: "1px",
           transition: "all 0.3s ease, opacity 0.1s ease", // Match the background transition speed

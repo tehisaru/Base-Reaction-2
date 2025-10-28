@@ -109,6 +109,31 @@ const GameBoard: React.FC<GameBoardProps> = ({
     return hq ? { isHQ: true, health: hq.health } : { isHQ: false };
   };
   
+  // Check if a cell is in the player's always-valid zone (HQ row/column or adjacent to HQ)
+  const isInPlayerAlwaysValidZone = (row: number, col: number) => {
+    // Only in base mode
+    if (powerUps.length === 0 && hqs.length === 0) return false;
+    
+    // Find current player's HQ
+    const ownHQ = hqs.find(hq => hq.player === currentPlayer);
+    if (!ownHQ) return false;
+    
+    // Check if in HQ line (row or column based on HQ position)
+    let isInHQLine = false;
+    if (ownHQ.col === 0 || ownHQ.col === cols - 1) {
+      // HQ is on left or right, player can place on their column
+      isInHQLine = col === ownHQ.col;
+    } else if (ownHQ.row === 0 || ownHQ.row === rows - 1) {
+      // HQ is on top or bottom, player can place on their row
+      isInHQLine = row === ownHQ.row;
+    }
+    
+    // Check if adjacent to own HQ (orthogonal or diagonal)
+    const isAdjacentToHQ = Math.abs(row - ownHQ.row) <= 1 && Math.abs(col - ownHQ.col) <= 1 && !(row === ownHQ.row && col === ownHQ.col);
+    
+    return isInHQLine || isAdjacentToHQ;
+  };
+  
   // Define the entrance animation
   const boardContainerVariants = {
     hidden: { 
@@ -200,6 +225,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   isHQDestroyed={isHQEffected && hqEffectType === 'destroyed'}
                   heartSelectionMode={heartSelectionMode}
                   pendingHeartPlayer={pendingHeartPlayer || undefined}
+                  isInAlwaysValidZone={isInPlayerAlwaysValidZone(rowIndex, colIndex)}
                 />
               </motion.div>
             );

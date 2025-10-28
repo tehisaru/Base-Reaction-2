@@ -88,7 +88,7 @@ const BaseReactionMode: React.FC = () => {
       className="min-h-screen flex flex-col items-center p-1 md:p-4 transition-colors duration-500 overflow-hidden"
       style={{ backgroundColor: PLAYER_BG_COLORS[currentPlayer] }}
     >
-      <h1 className="text-3xl font-bold mb-6 text-white pt-4" style={{ fontFamily: 'Menlo, monospace' }}>Base Reaction</h1>
+      <h1 className="text-xl md:text-3xl font-bold mb-2 md:mb-4 text-white pt-2 md:pt-4" style={{ fontFamily: 'Menlo, monospace' }}>Base Reaction</h1>
       
       <GameControls
         currentPlayer={currentPlayer}
@@ -110,8 +110,6 @@ const BaseReactionMode: React.FC = () => {
         isAnimating={isAnimating}
         setIsAnimating={setIsAnimating}
       />
-      
-      {/* Power-up explainer removed and moved to Tutorial */}
       
       {gameOver && winner && (
         <GameOverOverlay

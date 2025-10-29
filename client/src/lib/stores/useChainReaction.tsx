@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { PLAYER } from "../constants";
 import { PlayerSettingsManager, playerAssignments } from "../../components/Menu/MainMenu";
+import { soundManager } from "../soundManager";
 
 export type GridCell = {
   atoms: number;
@@ -622,6 +623,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                       const targetEnemy = enemyHQs[Math.floor(Math.random() * enemyHQs.length)];
                       console.log(`Heart powerup at (${r}, ${c}): Damaging alive enemy ${targetEnemy.player}`);
                       targetEnemy.health -= 1;
+                      soundManager.playHQDamage();
                       setTimeout(() => {
                         set(state => ({
                           ...state,
@@ -660,12 +662,14 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
         
         // Remove the diamond power-up after use
         newPowerUps.splice(powerUpIndex, 1);
+        soundManager.playPowerUp();
       } else if (powerUp && powerUp.type === 'heart') {
         // NEW HEART POWER-UP LOGIC - NO DOT PLACEMENT
         console.log("Heart power-up used!");
         
         // Remove power-up first
         newPowerUps.splice(powerUpIndex, 1);
+        soundManager.playPowerUp();
         
         // Get own HQ
         const ownHQ = newHqs.find(hq => hq.player === state.currentPlayer);
@@ -699,6 +703,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
             const targetEnemy = enemyHQs[0];
             console.log(`Heart: Auto-damaging single alive enemy ${targetEnemy.player}`);
             targetEnemy.health -= 1;
+            soundManager.playHQDamage();
             
             // Store the damage effect for animation
             setTimeout(() => {
@@ -744,6 +749,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
         };
       } else {
         // Normal move - add a dot to the selected cell
+        soundManager.playClick();
         if (newGrid[row][col].player !== state.currentPlayer && newGrid[row][col].player !== null) {
           // If capturing enemy cell, replace with 1 atom
           newGrid[row][col] = { atoms: 1, player: state.currentPlayer };
@@ -832,11 +838,13 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                   if (survivingHQs.length === 1) {
                     gameOver = true;
                     winner = survivingHQs[0].player;
+                    soundManager.playVictory();
                   }
                   // If no HQs remain, something weird happened!
                   else if (survivingHQs.length === 0) {
                     gameOver = true;
                     winner = null; // Draw
+                    soundManager.playGameOver();
                   }
                   // Alternative check: if just one HQ died this turn, the owner of that HQ loses
                   // and the other player wins if there are only 2 players
@@ -852,6 +860,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                       // Fallback
                       winner = deadPlayer === PLAYER.RED ? PLAYER.BLUE : PLAYER.RED;
                     }
+                    soundManager.playVictory();
                   }
                 } else {
                   // In classic mode, game is over if only one player has atoms
@@ -874,6 +883,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                   if (playersInGame.size === 1 && totalOccupiedCells > 0 && state.history.length >= 2) {
                     gameOver = true;
                     winner = Array.from(playersInGame)[0] as PLAYER;
+                    soundManager.playVictory();
                   }
                 }
 
@@ -1007,9 +1017,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
 
             if (cell.atoms >= criticalMass) {
               // Play explosion sound
-              if (get().animating) {
-                // Could add specific explosion sound here
-              }
+              soundManager.playExplosion();
 
               // Distribute atoms to neighbors
               newGrid[r][c].atoms -= criticalMass;
@@ -1033,6 +1041,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                       
                       // Damage enemy HQ
                       targetHQ.health -= 1;
+                      soundManager.playHQDamage();
                       console.log(`Enemy HQ damaged! Health now: ${targetHQ.health}`);
 
                       // Check if HQ was destroyed (health <= 0)
@@ -1422,6 +1431,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
             const playerHQ = newHqs.find(hq => hq.player === nextPlayer);
             if (playerHQ && playerHQ.health > 0) {
               playerHQ.health -= 1;
+              soundManager.playHQDamage();
               console.log(`Player ${nextPlayer} HQ damaged for no moves. Health: ${playerHQ.health}`);
               
               // Show damage effect

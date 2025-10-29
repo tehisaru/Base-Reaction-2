@@ -1310,6 +1310,196 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
         }
       }
 
+      // Check if the next player has any valid moves in base mode
+      // If not, damage their HQ and skip to next player
+      if (isBaseMode && !gameOver) {
+        let playersChecked = 0;
+        const maxPlayers = 10; // Safety limit to prevent infinite loop
+        
+        while (playersChecked < maxPlayers) {
+          // Check if nextPlayer has any valid moves
+          let hasValidMove = false;
+          
+          // Pure function to check valid moves without mutating state
+          // Duplicates isValidMove logic but with local parameters
+          const checkValidMove = (row: number, col: number, player: PLAYER): boolean => {
+            const cell = newGrid[row][col];
+            
+            // Can't play on HQ cells (forbidden)
+            const isHQCell = newHqs.some(hq => hq.row === row && hq.col === col);
+            if (isHQCell) return false;
+            
+            // In base mode, must follow HQ-based rules
+            if (cell.player === null || cell.player === player) {
+              const ownHQ = newHqs.find(hq => hq.player === player);
+              if (!ownHQ || ownHQ.health <= 0) return false;
+              
+              // If cell already belongs to player, always allow
+              if (cell.player === player) return true;
+              
+              // Check if in same line as HQ (row OR column, determined by HQ position)
+              let isInHQLine = false;
+              
+              // Determine which side the player's HQ is on
+              if (ownHQ.col === 0) {
+                // HQ is on left, player can only place on their column
+                isInHQLine = col === ownHQ.col;
+              } else if (ownHQ.col === newGrid[0].length - 1) {
+                // HQ is on right, player can only place on their column
+                isInHQLine = col === ownHQ.col;
+              } else if (ownHQ.row === 0) {
+                // HQ is on top, player can only place on their row
+                isInHQLine = row === ownHQ.row;
+              } else if (ownHQ.row === newGrid.length - 1) {
+                // HQ is on bottom, player can only place on their row
+                isInHQLine = row === ownHQ.row;
+              } else {
+                // Safety fallback for unexpected HQ positions
+                isInHQLine = (row === ownHQ.row || col === ownHQ.col);
+              }
+              
+              // Check if adjacent to HQ (including diagonal)
+              const isAdjacentToHQ = Math.abs(row - ownHQ.row) <= 1 && Math.abs(col - ownHQ.col) <= 1;
+              
+              // Check orthogonal neighbors
+              const orthogonalNeighbors = [
+                { row: row - 1, col: col },
+                { row: row + 1, col: col },
+                { row: row, col: col - 1 },
+                { row: row, col: col + 1 }
+              ];
+              
+              const hasOwnNeighbor = orthogonalNeighbors.some(n => {
+                if (n.row < 0 || n.row >= newGrid.length || n.col < 0 || n.col >= newGrid[0].length) return false;
+                return newGrid[n.row][n.col].player === player;
+              });
+              
+              // Check diagonal neighbors
+              const diagonalNeighbors = [
+                { row: row - 1, col: col - 1 },
+                { row: row - 1, col: col + 1 },
+                { row: row + 1, col: col - 1 },
+                { row: row + 1, col: col + 1 }
+              ];
+              
+              const hasOwnDiagonalNeighbor = diagonalNeighbors.some(n => {
+                if (n.row < 0 || n.row >= newGrid.length || n.col < 0 || n.col >= newGrid[0].length) return false;
+                return newGrid[n.row][n.col].player === player;
+              });
+              
+              return isInHQLine || isAdjacentToHQ || hasOwnNeighbor || hasOwnDiagonalNeighbor;
+            }
+            
+            return false;
+          };
+          
+          // Check all cells on the board
+          for (let r = 0; r < state.rows && !hasValidMove; r++) {
+            for (let c = 0; c < state.cols && !hasValidMove; c++) {
+              if (checkValidMove(r, c, nextPlayer)) {
+                hasValidMove = true;
+                break;
+              }
+            }
+          }
+          
+          // Also check if there are any power-ups the player can click
+          if (!hasValidMove) {
+            for (const powerUp of newPowerUps) {
+              // Players can always click power-ups
+              hasValidMove = true;
+              break;
+            }
+          }
+          
+          if (hasValidMove) {
+            console.log(`Player ${nextPlayer} has valid moves, turn starts normally`);
+            break; // This player can play, exit the loop
+          } else {
+            // No valid moves - damage HQ and skip to next player
+            console.log(`⚠️ Player ${nextPlayer} has NO valid moves! Damaging HQ and skipping turn.`);
+            
+            const playerHQ = newHqs.find(hq => hq.player === nextPlayer);
+            if (playerHQ && playerHQ.health > 0) {
+              playerHQ.health -= 1;
+              console.log(`Player ${nextPlayer} HQ damaged for no moves. Health: ${playerHQ.health}`);
+              
+              // Show damage effect
+              setTimeout(() => {
+                set(state => ({
+                  ...state,
+                  lastHQDamaged: {
+                    row: playerHQ.row,
+                    col: playerHQ.col,
+                    player: playerHQ.player,
+                    timestamp: Date.now(),
+                    type: playerHQ.health <= 0 ? 'destroyed' : 'damage'
+                  }
+                }));
+              }, 0);
+              
+              // If HQ is destroyed, remove it
+              if (playerHQ.health <= 0) {
+                console.log(`Player ${nextPlayer} HQ DESTROYED due to no moves!`);
+                setTimeout(() => {
+                  set(state => ({
+                    hqs: state.hqs.filter(hq => !(hq.row === playerHQ.row && hq.col === playerHQ.col))
+                  }));
+                }, 1500);
+                
+                // Clear all dots for this player
+                for (let r = 0; r < newGrid.length; r++) {
+                  for (let c = 0; c < newGrid[r].length; c++) {
+                    if (newGrid[r][c].player === nextPlayer) {
+                      newGrid[r][c] = { atoms: 0, player: null };
+                    }
+                  }
+                }
+              }
+            }
+            
+            // Get active players and rotate to next
+            try {
+              const settings = PlayerSettingsManager.getSettings();
+              let activePlayers: PLAYER[] = settings.players || [PLAYER.RED, PLAYER.BLUE];
+              
+              // Filter out dead players
+              const livingHQPlayers = newHqs
+                .filter(hq => hq.health > 0)
+                .map(hq => hq.player);
+              activePlayers = activePlayers.filter(player => livingHQPlayers.includes(player));
+              
+              if (activePlayers.length === 0) {
+                // No players left, game over
+                gameOver = true;
+                winner = null;
+                break;
+              }
+              
+              // Rotate to next player
+              const currentIndex = activePlayers.indexOf(nextPlayer);
+              const nextIndex = (currentIndex + 1) % activePlayers.length;
+              nextPlayer = activePlayers[nextIndex];
+              
+              playersChecked++;
+            } catch (error) {
+              console.error("Error rotating to next player:", error);
+              break;
+            }
+          }
+        }
+        
+        // Check if only one HQ remains
+        const survivingHQs = newHqs.filter(hq => hq.health > 0);
+        if (survivingHQs.length === 1) {
+          gameOver = true;
+          winner = survivingHQs[0].player;
+        } else if (survivingHQs.length === 0) {
+          gameOver = true;
+          winner = null;
+        }
+      }
+
       // Generate only ONE power-up with a 25% chance after the first turn
       // But don't generate if we already have too many (max 4 power-ups) - reduced spawn rate by 20%
       if (isBaseMode && state.history.length >= 1 && Math.random() < 0.25 && newPowerUps.length < 4) {

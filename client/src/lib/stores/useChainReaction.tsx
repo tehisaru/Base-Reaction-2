@@ -566,9 +566,9 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                 // Check if coordinates are valid (within grid bounds)
                 if (r >= 0 && r < state.rows && c >= 0 && c < state.cols) {
                   // Place dot only if the cell is empty or belongs to the current player
-                  if (newGrid[r][c].player === null || newGrid[r][c].player === currentPlayer) {
+                  if (newGrid[r][c].player === null || newGrid[r][c].player === state.currentPlayer) {
                     newGrid[r][c].atoms += 1;
-                    newGrid[r][c].player = currentPlayer;
+                    newGrid[r][c].player = state.currentPlayer;
                     cellsWithDots.push({r, c});
                   }
                 }
@@ -578,9 +578,9 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
             // 2-player game: Diamond adds a dot to each cell in the row
             console.log("Diamond power-up in 2-player game: spawning dots in row");
             for (let c = 0; c < state.cols; c++) {
-              if (newGrid[row][c].player === null || newGrid[row][c].player === currentPlayer) {
+              if (newGrid[row][c].player === null || newGrid[row][c].player === state.currentPlayer) {
                 newGrid[row][c].atoms += 1;
-                newGrid[row][c].player = currentPlayer;
+                newGrid[row][c].player = state.currentPlayer;
                 cellsWithDots.push({r: row, c});
               }
             }
@@ -597,7 +597,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
               
               if (cellPowerUp.type === 'heart') {
                 // Activate heart powerup
-                const ownHQ = newHqs.find(hq => hq.player === currentPlayer);
+                const ownHQ = newHqs.find(hq => hq.player === state.currentPlayer);
                 if (ownHQ) {
                   if (ownHQ.health < 5) {
                     // Heal own HQ
@@ -617,7 +617,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                     }, 0);
                   } else {
                     // Damage a random alive enemy (health > 0)
-                    const enemyHQs = newHqs.filter(hq => hq.player !== currentPlayer && hq.health > 0);
+                    const enemyHQs = newHqs.filter(hq => hq.player !== state.currentPlayer && hq.health > 0);
                     if (enemyHQs.length > 0) {
                       const targetEnemy = enemyHQs[Math.floor(Math.random() * enemyHQs.length)];
                       console.log(`Heart powerup at (${r}, ${c}): Damaging alive enemy ${targetEnemy.player}`);
@@ -651,9 +651,9 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
           console.error("Error determining player count for diamond power-up:", error);
           // Fallback to original behavior
           for (let c = 0; c < state.cols; c++) {
-            if (newGrid[row][c].player === null || newGrid[row][c].player === currentPlayer) {
+            if (newGrid[row][c].player === null || newGrid[row][c].player === state.currentPlayer) {
               newGrid[row][c].atoms += 1;
-              newGrid[row][c].player = currentPlayer;
+              newGrid[row][c].player = state.currentPlayer;
             }
           }
         }
@@ -668,7 +668,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
         newPowerUps.splice(powerUpIndex, 1);
         
         // Get own HQ
-        const ownHQ = newHqs.find(hq => hq.player === currentPlayer);
+        const ownHQ = newHqs.find(hq => hq.player === state.currentPlayer);
         if (!ownHQ) {
           console.error("No HQ found for current player");
           // Continue with normal game flow even if no HQ found
@@ -693,7 +693,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
         } else {
           // Case 2 & 3: 5 health - damage an enemy
           // Only consider ALIVE enemies (health > 0)
-          const enemyHQs = newHqs.filter(hq => hq.player !== currentPlayer && hq.health > 0);
+          const enemyHQs = newHqs.filter(hq => hq.player !== state.currentPlayer && hq.health > 0);
           if (enemyHQs.length === 1) {
             // Case 2: Only one alive enemy - damage automatically
             const targetEnemy = enemyHQs[0];
@@ -722,7 +722,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
               powerUps: newPowerUps,
               hqs: newHqs,
               heartSelectionMode: true,
-              pendingHeartPlayer: currentPlayer
+              pendingHeartPlayer: state.currentPlayer
             };
           }
         }
@@ -732,7 +732,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
         // For heart power-up, complete the turn immediately (no dots or explosions)
         // Get active players from settings
         const activePlayers = PlayerSettingsManager.getSettings().players;
-        const currentIndex = activePlayers.indexOf(currentPlayer);
+        const currentIndex = activePlayers.indexOf(state.currentPlayer);
         const nextIndex = (currentIndex + 1) % activePlayers.length;
         const nextPlayer = activePlayers[nextIndex];
         
@@ -744,13 +744,13 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
         };
       } else {
         // Normal move - add a dot to the selected cell
-        if (newGrid[row][col].player !== currentPlayer && newGrid[row][col].player !== null) {
+        if (newGrid[row][col].player !== state.currentPlayer && newGrid[row][col].player !== null) {
           // If capturing enemy cell, replace with 1 atom
-          newGrid[row][col] = { atoms: 1, player: currentPlayer };
+          newGrid[row][col] = { atoms: 1, player: state.currentPlayer };
         } else {
           // Otherwise add an atom
           newGrid[row][col].atoms += 1;
-          newGrid[row][col].player = currentPlayer;
+          newGrid[row][col].player = state.currentPlayer;
         }
       }
 

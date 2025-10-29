@@ -58,8 +58,8 @@ const BoardCell: React.FC<BoardCellProps> = ({
   const aboutToExplode = isAboutToExplode(cell, row, col, totalRows, totalCols);
   const cellRef = useRef<HTMLDivElement>(null);
 
-  // Check if this HQ is a valid heart target
-  const isHeartTarget = heartSelectionMode && isHQ && cell.player !== pendingHeartPlayer && cell.player !== null;
+  // Check if this HQ is a valid heart target (must be alive with health > 0)
+  const isHeartTarget = heartSelectionMode && isHQ && cell.player !== pendingHeartPlayer && cell.player !== null && hqHealth !== undefined && hqHealth > 0;
   
   // Debug logging for heart selection
   if (heartSelectionMode) {

@@ -360,7 +360,14 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
       const ownHQ = hqs.find(hq => hq.player === currentPlayer);
 
       if (!ownHQ) return false; // Safety check
+      
+      // If the cell already belongs to the current player, always allow placing on it
+      // This allows players to add more dots to their existing cells
+      if (cell.player === currentPlayer) {
+        return true;
+      }
 
+      // For empty cells, check movement rules
       // RULE 3: Check if in the side of the HQ (row OR column, determined by HQ position)
       // This allows for "line of sight" expansion only on their own side
       let isInHQLine = false;
@@ -455,9 +462,9 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
       const clickedHQ = allHQs.find(hq => hq.row === row && hq.col === col);
       console.log(`Clicked HQ:`, clickedHQ);
       
-      // Check if it's a valid enemy target
-      const isValidTarget = clickedHQ && clickedHQ.player !== currentPlayer;
-      console.log(`Is valid enemy target:`, isValidTarget);
+      // Check if it's a valid enemy target (must be alive with health > 0)
+      const isValidTarget = clickedHQ && clickedHQ.player !== currentPlayer && clickedHQ.health > 0;
+      console.log(`Is valid enemy target (alive):`, isValidTarget);
       
       // Get active players from settings and calculate next player
       const activePlayers = PlayerSettingsManager.getSettings().players;
@@ -609,11 +616,11 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                       }));
                     }, 0);
                   } else {
-                    // Damage a random enemy
-                    const enemyHQs = newHqs.filter(hq => hq.player !== currentPlayer);
+                    // Damage a random alive enemy (health > 0)
+                    const enemyHQs = newHqs.filter(hq => hq.player !== currentPlayer && hq.health > 0);
                     if (enemyHQs.length > 0) {
                       const targetEnemy = enemyHQs[Math.floor(Math.random() * enemyHQs.length)];
-                      console.log(`Heart powerup at (${r}, ${c}): Damaging enemy ${targetEnemy.player}`);
+                      console.log(`Heart powerup at (${r}, ${c}): Damaging alive enemy ${targetEnemy.player}`);
                       targetEnemy.health -= 1;
                       setTimeout(() => {
                         set(state => ({
@@ -685,11 +692,12 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
           }, 0);
         } else {
           // Case 2 & 3: 5 health - damage an enemy
-          const enemyHQs = newHqs.filter(hq => hq.player !== currentPlayer);
+          // Only consider ALIVE enemies (health > 0)
+          const enemyHQs = newHqs.filter(hq => hq.player !== currentPlayer && hq.health > 0);
           if (enemyHQs.length === 1) {
-            // Case 2: Only one enemy - damage automatically
+            // Case 2: Only one alive enemy - damage automatically
             const targetEnemy = enemyHQs[0];
-            console.log(`Heart: Auto-damaging single enemy ${targetEnemy.player}`);
+            console.log(`Heart: Auto-damaging single alive enemy ${targetEnemy.player}`);
             targetEnemy.health -= 1;
             
             // Store the damage effect for animation
@@ -706,7 +714,7 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
               }));
             }, 0);
           } else if (enemyHQs.length > 1) {
-            // Case 3: Multiple enemies - enter selection mode
+            // Case 3: Multiple alive enemies - enter selection mode
             console.log("Heart: Entering enemy selection mode");
             // Return the state with heart selection mode enabled, but don't continue processing
             return {

@@ -32,7 +32,10 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: npm run build -- --base=/base-reaction/
+
+      - name: Copy 404.html for SPA routing
+        run: cp client/dist/index.html client/dist/404.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

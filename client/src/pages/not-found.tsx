@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function NotFound() {
   return (
@@ -10,7 +11,7 @@ export default function NotFound() {
         </div>
 
         <p className="mt-4 text-sm text-gray-200">
-          Please return to the <a href="/" className="text-blue-300 hover:text-blue-200">main menu</a>.
+          Please return to the <Link to="/" className="text-blue-300 hover:text-blue-200">main menu</Link>.
         </p>
       </div>
     </div>

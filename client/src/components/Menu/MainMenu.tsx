@@ -148,8 +148,8 @@ const MainMenu: React.FC = () => {
     }
     return 'main';
   });
-  const [tutorialMode, setTutorialMode] = useState<'chain-reaction' | 'base-reaction'>('chain-reaction');
-  const [selectedMode, setSelectedMode] = useState<'chain-reaction' | 'base-reaction'>(() => {
+  const [tutorialMode, setTutorialMode] = useState<'chain-reaction' | 'base-reaction-2'>('chain-reaction');
+  const [selectedMode, setSelectedMode] = useState<'chain-reaction' | 'base-reaction-2'>(() => {
     if (navigationState?.selectedMode) {
       return navigationState.selectedMode;
     }
@@ -297,7 +297,7 @@ const MainMenu: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               transition={{ duration: 0.1 }}
               onClick={() => {
-                setSelectedMode('base-reaction');
+                setSelectedMode('base-reaction-2');
                 setMenuScreen('multiplayer');
               }}
               className={`${buttonStyle.base} ${buttonStyle.primary}`}
@@ -457,7 +457,7 @@ const MainMenu: React.FC = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => {
-                setTutorialMode('base-reaction');
+                setTutorialMode('base-reaction-2');
                 setMenuScreen('tutorial-content');
               }}
               className={`${buttonStyle.base} ${buttonStyle.primary}`}

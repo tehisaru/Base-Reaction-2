@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 interface TutorialScreenProps {
-  mode: "chain-reaction" | "base-reaction";
+  mode: "chain-reaction" | "base-reaction-2";
   onBack?: () => void; // Optional callback to handle back navigation
 }
 

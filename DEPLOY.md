@@ -22,7 +22,7 @@ This project is now configured for easy deployment to GitHub Pages.
 
 - The project will automatically build and deploy when you push to the `main` branch
 - The build process creates optimized static files
-- Your game will be available at: `https://yourusername.github.io/base-reaction`
+- Your game will be available at: `https://yourusername.github.io/base-reaction-2`
 
 ## Manual Deployment
 

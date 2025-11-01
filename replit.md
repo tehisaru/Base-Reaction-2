@@ -64,9 +64,9 @@ Preferred communication style: Simple, everyday language.
 - **Code Quality**: ESLint and TypeScript compiler checks
 
 ## Deployment
-- **Static Hosting**: GitHub Pages deployment from main branch at https://tehisaru.github.io/base-reaction
-- **Build Process**: Vite production builds with base path `/base-reaction/` for subdirectory deployment
+- **Static Hosting**: GitHub Pages deployment from main branch at https://tehisaru.github.io/base-reaction-2
+- **Build Process**: Vite production builds with base path `/base-reaction-2/` for subdirectory deployment
 - **Asset Loading**: All assets use `import.meta.env.BASE_URL` for base-path-aware loading
 - **Routing**: BrowserRouter configured with `basename={import.meta.env.BASE_URL}` for SPA routing in subdirectory
-- **GitHub Actions**: Automated deployment workflow builds with `--base=/base-reaction/` flag and copies index.html to 404.html for SPA routing support
-- **Build Command**: For manual builds, always use `npm run build -- --base=/base-reaction/` to ensure correct asset paths
+- **GitHub Actions**: Automated deployment workflow builds with `--base=/base-reaction-2/` flag and copies index.html to 404.html for SPA routing support
+- **Build Command**: For manual builds, always use `npm run build -- --base=/base-reaction-2/` to ensure correct asset paths

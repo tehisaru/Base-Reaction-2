@@ -276,7 +276,9 @@ const MainMenu: React.FC = () => {
           className="text-3xl md:text-6xl font-bold text-center text-white mb-4" 
           style={{ fontFamily: 'Menlo, monospace' }}
         >
-          Base Reaction
+          {menuScreen === 'multiplayer' 
+            ? (selectedMode === 'chain-reaction' ? 'Chain Reaction' : 'Base Reaction')
+            : 'Base Reaction'}
         </motion.h1>
       </div>
       
@@ -539,7 +541,7 @@ const MainMenu: React.FC = () => {
                   <div className="absolute inset-0 flex items-center justify-center">
                     {config.control === PLAYER_CONTROL.HUMAN ? (
                       <img 
-                        src={`${import.meta.env.BASE_URL}icons/human_icon.png`}
+                        src="/icons/human_icon.png" 
                         alt="Human" 
                         className="w-7 h-7"
                         loading="eager"
@@ -547,7 +549,7 @@ const MainMenu: React.FC = () => {
                       />
                     ) : (
                       <img 
-                        src={`${import.meta.env.BASE_URL}icons/AI_icon.png`}
+                        src="/icons/AI_icon.png" 
                         alt="AI" 
                         className="w-7 h-7"
                         loading="eager"

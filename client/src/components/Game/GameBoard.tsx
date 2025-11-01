@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import BoardCell from "./BoardCell";
 import { CELL_SIZE, PLAYER } from "../../lib/constants";
 import type { GridCell, PowerUpCell, HQCell } from "../../lib/stores/useChainReaction";
-import { useAudio } from "../../lib/stores/useAudio";
 import { useChainReaction } from "../../lib/stores/useChainReaction";
 
 interface GameBoardProps {
@@ -34,7 +33,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [lastClickedCell, setLastClickedCell] = useState<{row: number, col: number} | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [scale, setScale] = useState(1);
-  const { playHit } = useAudio();
   const { lastHQDamaged, heartSelectionMode, pendingHeartPlayer } = useChainReaction();
   
   // Trigger entrance animation immediately when the component mounts
@@ -75,9 +73,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
   
   // Handle cell click with animation tracking
   const handleCellClick = (row: number, col: number) => {
-    // Play sound effect
-    playHit();
-    
     // Track this cell as last clicked
     setLastClickedCell({row, col});
     

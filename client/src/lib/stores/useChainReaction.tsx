@@ -852,7 +852,6 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                       // Fallback
                       winner = deadPlayer === PLAYER.RED ? PLAYER.BLUE : PLAYER.RED;
                     }
-                    soundManager.playVictory();
                   }
                 } else {
                   // In classic mode, game is over if only one player has atoms
@@ -875,7 +874,6 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                   if (playersInGame.size === 1 && totalOccupiedCells > 0 && state.history.length >= 2) {
                     gameOver = true;
                     winner = Array.from(playersInGame)[0] as PLAYER;
-                    soundManager.playVictory();
                   }
                 }
 
@@ -1008,9 +1006,6 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
             const cell = newGrid[r][c];
 
             if (cell.atoms >= criticalMass) {
-              // Play explosion sound
-              soundManager.playExplosion();
-
               // Distribute atoms to neighbors
               newGrid[r][c].atoms -= criticalMass;
               if (newGrid[r][c].atoms === 0) {
@@ -1033,7 +1028,6 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                       
                       // Damage enemy HQ
                       targetHQ.health -= 1;
-                      soundManager.playHQDamage();
                       console.log(`Enemy HQ damaged! Health now: ${targetHQ.health}`);
 
                       // Check if HQ was destroyed (health <= 0)
@@ -1423,7 +1417,6 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
             const playerHQ = newHqs.find(hq => hq.player === nextPlayer);
             if (playerHQ && playerHQ.health > 0) {
               playerHQ.health -= 1;
-              soundManager.playHQDamage();
               console.log(`Player ${nextPlayer} HQ damaged for no moves. Health: ${playerHQ.health}`);
               
               // Show damage effect

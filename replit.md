@@ -28,7 +28,6 @@ Preferred communication style: Simple, everyday language.
   - Classic Mode: Traditional chain reaction rules
   - Base Reaction Mode: Enhanced with headquarters (HQ) system and power-ups
 - **Animation System**: Centralized animation state management with precise timing control
-- **Audio System**: Dedicated audio store for sound effects and background music management
 
 ## Component Structure
 - **Game Components**: Modular game board, cells, controls, and overlay components
@@ -65,5 +64,9 @@ Preferred communication style: Simple, everyday language.
 - **Code Quality**: ESLint and TypeScript compiler checks
 
 ## Deployment
-- **Static Hosting**: GitHub Pages deployment configuration
-- **Build Process**: Vite production builds with asset optimization
+- **Static Hosting**: GitHub Pages deployment from main branch at https://tehisaru.github.io/base-reaction
+- **Build Process**: Vite production builds with base path `/base-reaction/` for subdirectory deployment
+- **Asset Loading**: All assets use `import.meta.env.BASE_URL` for base-path-aware loading
+- **Routing**: BrowserRouter configured with `basename={import.meta.env.BASE_URL}` for SPA routing in subdirectory
+- **GitHub Actions**: Automated deployment workflow builds with `--base=/base-reaction/` flag and copies index.html to 404.html for SPA routing support
+- **Build Command**: For manual builds, always use `npm run build -- --base=/base-reaction/` to ensure correct asset paths

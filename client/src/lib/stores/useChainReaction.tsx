@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { PLAYER } from "../constants";
 import { PlayerSettingsManager, playerAssignments } from "../../components/Menu/MainMenu";
-import { soundManager } from "../soundManager";
 
 export type GridCell = {
   atoms: number;
@@ -623,7 +622,6 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                       const targetEnemy = enemyHQs[Math.floor(Math.random() * enemyHQs.length)];
                       console.log(`Heart powerup at (${r}, ${c}): Damaging alive enemy ${targetEnemy.player}`);
                       targetEnemy.health -= 1;
-                      soundManager.playHQDamage();
                       setTimeout(() => {
                         set(state => ({
                           ...state,
@@ -662,14 +660,12 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
         
         // Remove the diamond power-up after use
         newPowerUps.splice(powerUpIndex, 1);
-        soundManager.playPowerUp();
       } else if (powerUp && powerUp.type === 'heart') {
         // NEW HEART POWER-UP LOGIC - NO DOT PLACEMENT
         console.log("Heart power-up used!");
         
         // Remove power-up first
         newPowerUps.splice(powerUpIndex, 1);
-        soundManager.playPowerUp();
         
         // Get own HQ
         const ownHQ = newHqs.find(hq => hq.player === state.currentPlayer);
@@ -703,7 +699,6 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
             const targetEnemy = enemyHQs[0];
             console.log(`Heart: Auto-damaging single alive enemy ${targetEnemy.player}`);
             targetEnemy.health -= 1;
-            soundManager.playHQDamage();
             
             // Store the damage effect for animation
             setTimeout(() => {
@@ -749,7 +744,6 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
         };
       } else {
         // Normal move - add a dot to the selected cell
-        soundManager.playClick();
         if (newGrid[row][col].player !== state.currentPlayer && newGrid[row][col].player !== null) {
           // If capturing enemy cell, replace with 1 atom
           newGrid[row][col] = { atoms: 1, player: state.currentPlayer };
@@ -838,13 +832,11 @@ export const useChainReaction = create<ChainReactionState>((set, get) => ({
                   if (survivingHQs.length === 1) {
                     gameOver = true;
                     winner = survivingHQs[0].player;
-                    soundManager.playVictory();
                   }
                   // If no HQs remain, something weird happened!
                   else if (survivingHQs.length === 0) {
                     gameOver = true;
                     winner = null; // Draw
-                    soundManager.playGameOver();
                   }
                   // Alternative check: if just one HQ died this turn, the owner of that HQ loses
                   // and the other player wins if there are only 2 players

@@ -493,6 +493,9 @@ const MainMenu: React.FC = () => {
           transition={{ duration: 0.3 }}
           className="bg-black p-4 w-full max-w-xs mx-auto"
         >
+          <h2 className="text-xl font-bold mb-4 text-center" style={{ fontFamily: 'Menlo, monospace' }}>
+            {selectedMode === 'chain-reaction' ? 'Chain Reaction' : 'Base Reaction'}
+          </h2>
           <div className="mb-4">
             <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Menlo, monospace' }}>Number of Players</h3>
             <div className="grid grid-cols-3 gap-2">

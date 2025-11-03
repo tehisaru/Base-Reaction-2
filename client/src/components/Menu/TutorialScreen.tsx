@@ -47,9 +47,11 @@ const TutorialScreen: React.FC<TutorialScreenProps> = ({ mode, onBack }) => {
             <section>
               <h2 className="text-lg font-semibold mb-2" style={typewriterFont}>How to Play</h2>
               <ul className="list-disc pl-6 space-y-1" style={typewriterFont}>
+            
                 <li>Win by being the last player with an HQ</li>
-                <li>You can only place dots near your HQ, on the line that your HQ is on or next to your existing dots</li>
-                <li>Exploding next to enemy HQs damages them</li>
+                <li>Place dots in the highlighted area or next to your existing dots</li>
+                <li>Capture enemy dots by exploding next to them</li>
+                <li>Exploding next to enemy HQ damages it</li>
               </ul>
             </section>
             
@@ -57,10 +59,10 @@ const TutorialScreen: React.FC<TutorialScreenProps> = ({ mode, onBack }) => {
               <h2 className="text-lg font-semibold mb-2" style={typewriterFont}>Power-ups</h2>
               <ul className="list-disc pl-6 space-y-1" style={typewriterFont}>
                 <li>
-                  <strong>Diamond:</strong> When a player places a dot on a diamond, a 3×3 grid of cells centered on the diamond gets one dot of the player's color added to each cell (only applies to empty cells or cells with the player's color).
+                  <strong>Diamond:</strong> When a player places a dot on a diamond, a row (2 players) or 3×3 grid of dots of that player's color appear
                 </li>
                 <li>
-                  <strong>Heart:</strong> The player's HQ gains one life (up to a maximum of 5). In 3-4 player games, hearts never damage enemy HQs.
+                  <strong>Heart:</strong> When a player places a dot on a heart they damage enemy HQ or heals the player's HQ (if less than 5 lives)
                 </li>
               </ul>
             </section>

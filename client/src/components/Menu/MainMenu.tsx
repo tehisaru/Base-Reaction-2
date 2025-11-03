@@ -538,7 +538,7 @@ const MainMenu: React.FC = () => {
                   <div className="absolute inset-0 flex items-center justify-center">
                     {config.control === PLAYER_CONTROL.HUMAN ? (
                       <img 
-                        src="/icons/human_icon.png" 
+                        src="/Base-Reaction-2/client/public/icons/human_icon.svg" 
                         alt="Human" 
                         className="w-7 h-7"
                         loading="eager"
@@ -546,7 +546,7 @@ const MainMenu: React.FC = () => {
                       />
                     ) : (
                       <img 
-                        src="/icons/AI_icon.png" 
+                        src="/Base-Reaction-2/client/public/icons/AI_icon.svg" 
                         alt="AI" 
                         className="w-7 h-7"
                         loading="eager"

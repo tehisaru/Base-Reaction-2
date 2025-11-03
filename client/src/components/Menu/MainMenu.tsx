@@ -521,44 +521,29 @@ const MainMenu: React.FC = () => {
 
 
           <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2 text-center" style={{ fontFamily: 'Menlo, monospace' }}>Players</h3>
-            <div className="flex justify-center">
-              <div className="grid grid-cols-4 gap-2 w-fit">
-              {playerConfigs.map((config) => (
-                <motion.div 
-                  key={config.player} 
-                  className={`w-14 h-14 rounded-full cursor-pointer relative ${config.player === PLAYER.BLACK ? 'border-2 border-white' : ''}`}
-                  style={{ 
-                    backgroundColor: PLAYER_COLORS[config.player]
-                  }}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => togglePlayerControl(config.player)}
-                >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {config.control === PLAYER_CONTROL.HUMAN ? (
-                      <img 
-                        src="icons/human_icon.svg" 
-                        alt="Human" 
-                        className="w-7 h-7"
-                        loading="eager"
-                        decoding="sync"
-                      />
-                    ) : (
-                      <img 
-                        src="icons/AI_icon.svg" 
-                        alt="AI" 
-                        className="w-7 h-7"
-                        loading="eager"
-                        decoding="sync"
-                      />
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-              </div>
-            </div>
+  <h3 className="text-lg font-semibold mb-2 text-center" style={{ fontFamily: 'Menlo, monospace' }}>Players</h3>
+  <div className="flex justify-center">
+    <div className="grid grid-cols-4 gap-2 w-fit">
+      {playerConfigs.map((config) => (
+        <motion.div 
+          key={config.player} 
+          className={`w-14 h-14 rounded-full cursor-pointer relative ${config.player === PLAYER.BLACK ? 'border-2 border-white' : ''}`}
+          style={{ 
+            backgroundColor: PLAYER_COLORS[config.player]
+          }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => togglePlayerControl(config.player)}
+        >
+          <div className="absolute inset-0 flex items-center justify-center text-2xl">
+            {config.control === PLAYER_CONTROL.HUMAN ? '👤' : '🤖'}
           </div>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</div>
+
           
           <div className="grid grid-cols-1 gap-4">
             <motion.button
